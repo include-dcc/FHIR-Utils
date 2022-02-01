@@ -60,5 +60,31 @@ for vocabulary in config.keys():
     for c in codes["concept"]:
         c.pop("designation", None)
 
+    if "description" not in codes:
+        codes["description"] = data['description']
+
     with open(output_filename, "w") as hj:
         json.dump(codes, hj, indent=2)
+
+    valueset_name = outputdir / f"{vocabulary}_vs.json"
+
+    valueset = {
+        "resourceType": "ValueSet",
+        "status": "active",
+        "name": f"{codes['name']}-VS",
+        "id": f"{codes['id']}-vs",
+        "version": codes['version'],
+        "experimental": codes['experimental'],
+        "description": codes['description'],
+        "url": codes['valueSet'],
+        "compose": {
+            "include": [
+                {
+                    "system": codes['url']
+                }
+            ]
+        }
+
+    }
+    with open(valueset_name, "wt") as f:
+        json.dump(valueset, f, indent=2)

@@ -3,9 +3,11 @@ hpo:
   name: Human Phenotype Ontology
   namespace: http://purl.obolibrary.org/obo/HP_
   code_prefix: "HP:"
+  description: Phenotypic abnormalities encountered in human disease
 mondo:
   url: http://purl.obolibrary.org/obo/mondo.owl
   name: Mondo Disease Ontology
   namespace: http://purl.obolibrary.org/obo/MONDO_
   code_prefix: "MONDO:"
+  description: The Mondo Disease Ontology (Mondo) aims to harmonize disease definitions across the world.
 

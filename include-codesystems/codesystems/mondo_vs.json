@@ -1,0 +1,17 @@
+{
+  "resourceType": "ValueSet",
+  "status": "active",
+  "name": "Mondo-VS",
+  "id": "mondo-vs",
+  "version": "http://purl.obolibrary.org/obo/mondo/releases/2021-12-30/mondo.owl",
+  "experimental": false,
+  "description": "The Mondo Disease Ontology (Mondo) aims to harmonize disease definitions across the world.",
+  "url": "http://purl.obolibrary.org/obo/mondo.owl?vs",
+  "compose": {
+    "include": [
+      {
+        "system": "http://purl.obolibrary.org/obo/mondo.owl"
+      }
+    ]
+  }
+}

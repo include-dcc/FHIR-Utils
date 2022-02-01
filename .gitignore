@@ -6,6 +6,7 @@ __pycache__/
 # Project specific files 
 *.owl
 *.jar
+fhir_hosts
 
 # C extensions
 *.so
