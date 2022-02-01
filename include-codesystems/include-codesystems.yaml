@@ -1,0 +1,11 @@
+hpo:
+  url: http://purl.obolibrary.org/obo/hp.owl
+  name: Human Phenotype Ontology
+  namespace: http://purl.obolibrary.org/obo/HP_
+  code_prefix: "HP:"
+mondo:
+  url: http://purl.obolibrary.org/obo/mondo.owl
+  name: Mondo Disease Ontology
+  namespace: http://purl.obolibrary.org/obo/MONDO_
+  code_prefix: "MONDO:"
+
