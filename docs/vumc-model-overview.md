@@ -37,6 +37,68 @@ Similarly to the variables themselves, for those variables with a "dropbox" or "
 
 All categorical responses will be coded with the corresponding code from the question's answer list. 
 
+## Age Representation
+To represent age, we are using the [Relative Date/Time Extension](http://hl7.org/fhir/StructureDefinition/cqf-relativeDateTime") This allows us to embed it anywhere a regular date might be provided however, it is not a specific date. To facilitate this feature, the extension is added to the target field's property which has an "_" preceeding the regular property name. 
+
+An example might be: 
+```json        
+    {
+      "resourceType": "Observation",
+      "id": "3",
+      "identifier": [ {
+        "system": "https://include.org/ds-connect/fhir/observation",
+        "value": "ds-connect.5766age_at_registration"
+      } ],
+      "status": "final",
+      "code": {
+        "coding": [ {
+          "system": "https://nih-ncpi.github.io/ncpi-fhir-ig/data-dictionary/ds-connect/demo",
+          "code": "age_at_registration",
+          "display": "age_at_registration"
+        } ],
+        "text": "age_at_registration"
+      },
+      "subject": {
+        "reference": "Patient/1"
+      },
+      "focus": [ {
+        "reference": "ObservationDefinition/2"
+      } ],
+      "_valueDateTime": {
+        "extension": [ {
+          "url": "http://hl7.org/fhir/StructureDefinition/cqf-relativeDateTime",
+          "extension": [ {
+            "url": "target",
+            "valueReference": {
+              "reference": "Patient/1"
+            }
+          }, {
+            "url": "targetPath",
+            "valueString": "birthDate"
+          }, {
+            "url": "relationship",
+            "valueCode": "after"
+          }, {
+            "url": "offset",
+            "valueDuration": {
+              "value": 29,
+              "system": "http://unitsofmeasure.org",
+              "code": "a"
+            }
+          } ]
+        } ]
+      }
+    }
+```
+## Participants (Patient)
+For each participant a corresponding [Patient](https://hl7.org/fhir/R4/patient.html) resource is created. This provides some whatever details we have access to below:
+
+| Variable Name | FHIR Representation | Possible Codings |
+| ------------- | ------------------- | ---------------- |
+| sex | gender | [male, female, other, unknown](https://hl7.org/fhir/R4/valueset-administrative-gender.html) |
+| race | extension with url "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race" | TBD |
+| ethnicity | extension with url "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity" | TBD |
+
 ## Study 
 To capture the study itself, we use [ResearchStudy](https://hl7.org/fhir/R4/researchstudy.html) which includes a handful of obvious properties:
     * name
@@ -44,4 +106,25 @@ To capture the study itself, we use [ResearchStudy](https://hl7.org/fhir/R4/rese
     * description
 
 To capture membership details, we are currently creating groups that represent the various membership groupings such as consent groups, complete study, etc. All of these are stored within the enrollment list property. _It should be noted that, as of last inspection, R5 ResearchStudy is quite different and this will quite likely not be possible once the transition to 5 is made._
+
+### Study Participants
+To tie a Patient to the study, we are using [ResearchSubject](https://hl7.org/fhir/R4/researchsubject.html). This is a simple resource with attributes *study* which points to the Study resource and *individual* which points to the Patient resource. 
+
+### Study Groups
+For datasets where we have individual consent group information, a group will be created for each distinct consent group. In addition to these consent groups, there will also be a single "complete" group which contains all valid participants of the study. 
+
+Participants of the relevant groups will be added as *Patient References* inside the group's *member* list as *entity* entries. 
+
+### DS-Connection Questionnaire
+For most of the questions, the column names have been modified to be more "computer friendly" and the actual column name is available as part of the IHQ's code system. The contents of an individual's responses are recorded as follows: 
+
+#### Observations
+For each data point for which a answer is recorded, an Observation will be created. 
+
+    * code - The code for these observations will be the code associated with the question from the IHQ code system. 
+    * subject - Reference to the Patient
+    * focus - Reference to the formal ObservationDefinition describing this question in the data-dictionary
+    * value[x] - Data found at the given column for this particular patient. 
+
+
 
