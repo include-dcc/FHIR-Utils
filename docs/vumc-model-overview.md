@@ -40,7 +40,7 @@ All categorical responses will be coded with the corresponding code from the que
 ## Age Representation
 To represent age, we are using the [Relative Date/Time Extension](http://hl7.org/fhir/StructureDefinition/cqf-relativeDateTime") This allows us to embed it anywhere a regular date might be provided however, it is not a specific date. To facilitate this feature, the extension is added to the target field's property which has an "_" preceeding the regular property name. 
 
-An example might be: 
+Please note the modified property, _valueDateTime below. This would normally be valueDateTime: 
 ```json        
     {
       "resourceType": "Observation",
@@ -115,16 +115,56 @@ For datasets where we have individual consent group information, a group will be
 
 Participants of the relevant groups will be added as *Patient References* inside the group's *member* list as *entity* entries. 
 
-### DS-Connection Questionnaire
+### DS-Connection Questionnaire (and DS Diagnosis/Karyotype)
 For most of the questions, the column names have been modified to be more "computer friendly" and the actual column name is available as part of the IHQ's code system. The contents of an individual's responses are recorded as follows: 
 
 #### Observations
-For each data point for which a answer is recorded, an Observation will be created. 
+For each data point for which a answer is recorded, an [Observation](https://hl7.org/fhir/R4/observation.html) will be created. 
 
     * code - The code for these observations will be the code associated with the question from the IHQ code system. 
     * subject - Reference to the Patient
     * focus - Reference to the formal ObservationDefinition describing this question in the data-dictionary
     * value[x] - Data found at the given column for this particular patient. 
 
+#### Conditions (Any reference to a diagnosis with an Annotation from Mondo or HPO)
+For values that were annotated in the google sheet produced by Pierrette and Nicole, data with a Mondo or HPO code with a positive finding are also recorded as [Condition](https://hl7.org/fhir/R4/condition.html) resources. These conditions will have the proper Mondo or HPO code as part of their code property. 
 
+    * code - The code for these conditions will include the relevant code from Mondo or HPO
+    * subject - Reference to the patient
 
+In addition to the Mondo or HPO code, there will also be a code referencing the Question/Answer code from the dataset/table's code system. 
+
+Please note that for those responses that aren't indicative of an actual diagnosis of a condition will not become conditions. Those can only be identified as Object resources. 
+
+### HTP 
+For HTP, for things that are noted as conditions in the original dataset will be treated to the same process as the DS-Connection Questionnaires. Basically, all non-missing data will be represented as an Observation and anything with a Mondo or HPO annotation will result as a Condition. 
+
+### HTP BMI+ and Encounters
+HTP provides BMI, Weight and Height along with an "age at" data point. The measurement components are recorded as Observations and the "age at" component is recorded as an Encounter to which each of the 3 observations refers to. 
+
+#### Encounter
+As noted above, all age related dates are encoded using the relative date/time extension. For [Encounters](https://hl7.org/fhir/R4/encounter.html), we associate the relative date with the following field: 
+    * period._start 
+
+#### Measurement (Observation)
+For measurements, we'll record the measurement in the [Observation](https://hl7.org/fhir/R4/observation.html) resource. 
+    * code - Will include any public ontology that is mapped (if there is one) as well as the data-dictionary component associated with the measurement (such as BMI, or Height, etc).
+    * subject - Reference to the patient
+    * focus - Reference to the ObservationDefinition describing this variable
+    * encounter - The encounter where the age_at value is recorded
+    * value[x] - The measurement itself. 
+
+### HTP Family Group
+While there probably is some family data, I don't currently have it. However, to associate related members together, we are creating [Group](https://hl7.org/fhir/R4/group.html) resources whose members are those individuals with the specified family ID.
+
+### HTP Biospecimen 
+(This is still somewhat a work in progress)
+
+For bio-specimen data, we are using the standard FHIR [Specimen](https://hl7.org/fhir/R4/specimen.html) resource. The data I received for HTP contains information for what has been called the Bio-specimen as well as the Sample types. The 3rd type, Derived Sample type is presumably going to be tied to the actual data file deliverable which we haven't received. 
+
+All specimen types that have been annotated with NCIt codes will have their NCIt codes assigned to the type coding. For those where no annotation can be found, the type coding's "text" will record the text representation provided in the data file. 
+
+    * status - "Available" if volume is provided and greater than 0. Otherwise, "Unavailable"
+    * type - Code associated with the specimen type
+    * subject - reference to the Patient's resource
+    * collection.quantity.value (and unit) associated with the value from the data (collection is not present if the value is missing)
