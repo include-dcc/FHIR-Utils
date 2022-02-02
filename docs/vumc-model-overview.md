@@ -37,6 +37,9 @@ Similarly to the variables themselves, for those variables with a "dropbox" or "
 
 All categorical responses will be coded with the corresponding code from the question's answer list. 
 
+## IDs and Identifiers
+IDs should always be available as part of the Identifier property, but will not be the first identifier. For cases where there is actually a meaningful ID (such as a barcode for a Sample or an ID associated with a Patient) the ID will be one of the values, but it's system will be that of the initial identifier with the addition of "/id" to the system string. 
+
 ## Age Representation
 To represent age, we are using the [Relative Date/Time Extension](http://hl7.org/fhir/StructureDefinition/cqf-relativeDateTime") This allows us to embed it anywhere a regular date might be provided however, it is not a specific date. To facilitate this feature, the extension is added to the target field's property which has an "_" preceeding the regular property name. 
 
