@@ -12,13 +12,13 @@ When we get a fully descriptive data dictionary, these fields will be represente
 
 | Data Component | Property in FHIR |
 | -------------- | ---------------- |
-| Column Name | name (TBD) |
-| Column Description | description |
 | Data Type Permitted | permittedDataType which can be from the values "Quantity, CodeableConcept, string, boolean, integer, Range, Ratio, SampledData, time, dateTime, Period" |
 | min/max for numerics | qualifiedInterval.range |
 | Categorical values for drop box type questions | validCodedValueSet |
 
 So far, the data dictionaries we've received for DS-Connect and HTP have been very different and not always as complete as they could be. It may be worth defining a formal format for groups to use to ensure that we can describe this data as completely as possible. 
+
+(an earlier version suggested the variable's name and description would be added to the OD resource, but those properties aren't actually present...)
 
 ### Codes
 We use CodeSystems and ValueSets to itemize each column and any categorical response that may be found inside a given dataset. 
@@ -39,6 +39,9 @@ All categorical responses will be coded with the corresponding code from the que
 
 ## IDs and Identifiers
 IDs should always be available as part of the Identifier property, but will not be the first identifier. For cases where there is actually a meaningful ID (such as a barcode for a Sample or an ID associated with a Patient) the ID will be one of the values, but it's system will be that of the initial identifier with the addition of "/id" to the system string. 
+
+## Study IDs inside Meta.tag
+To accommodate the request by the Portal team, we are include the Study ID inside the meta.tag coding. That is currently the only code in use, so it should be fine. It is probably wise to settle on some universal Systems for these types of IDs in case we end up using that for more than a single purpose. 
 
 ## Age Representation
 To represent age, we are using the [Relative Date/Time Extension](http://hl7.org/fhir/StructureDefinition/cqf-relativeDateTime") This allows us to embed it anywhere a regular date might be provided however, it is not a specific date. To facilitate this feature, the extension is added to the target field's property which has an "_" preceeding the regular property name. 
@@ -144,6 +147,8 @@ For HTP, for things that are noted as conditions in the original dataset will be
 
 ### HTP BMI+ and Encounters
 HTP provides BMI, Weight and Height along with an "age at" data point. The measurement components are recorded as Observations and the "age at" component is recorded as an Encounter to which each of the 3 observations refers to. 
+
+To reduce the number of queries, BMI, Weight and Height also include an age at for the propertly, _effectiveDateTime
 
 #### Encounter
 As noted above, all age related dates are encoded using the relative date/time extension. For [Encounters](https://hl7.org/fhir/R4/encounter.html), we associate the relative date with the following field: 
