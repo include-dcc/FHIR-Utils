@@ -10,4 +10,9 @@ mondo:
   namespace: http://purl.obolibrary.org/obo/MONDO_
   code_prefix: "MONDO:"
   description: The Mondo Disease Ontology (Mondo) aims to harmonize disease definitions across the world.
-
+ncit:
+  url: http://purl.obolibrary.org/obo/ncit.owl
+  name: NCI Thesaurus
+  namespace: http://purl.obolibrary.org/obo/NCIT_
+  code_prefix: "NCIT:"
+  description: The NCIt OBO Edition aims to increase integration of the NCIt with OBO Library ontologies.

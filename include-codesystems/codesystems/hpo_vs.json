@@ -3,7 +3,7 @@
   "status": "active",
   "name": "Human-VS",
   "id": "hpo-vs",
-  "version": "http://purl.obolibrary.org/obo/hp/releases/2021-10-10/hp.owl",
+  "version": "http://purl.obolibrary.org/obo/hp/releases/2022-02-14/hp.owl",
   "experimental": false,
   "description": "Phenotypic abnormalities encountered in human disease",
   "url": "http://purl.obolibrary.org/obo/hp.owl?vs",
